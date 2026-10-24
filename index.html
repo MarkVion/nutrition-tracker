@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Nutrition Tracker</title>
+  <meta name="description" content="Low-friction nutrition check-ins — 3x daily, local-first" />
+  <meta name="theme-color" content="#18181b" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Nutrition" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="brand">
+    <div class="brand-mark" aria-hidden="true"><span>🍽</span></div>
+    <div class="brand-text">
+      <h1>Nutrition</h1>
+      <p id="clock">—</p>
+    </div>
+    <button id="settings-btn" class="ghost" aria-label="Settings">⚙️</button>
+  </header>
+
+  <main>
+    <section id="checkin" class="card">
+      <h2 id="period-label">Log a check-in</h2>
+      <p id="period-since" class="muted">Since your last check-in?</p>
+
+      <div class="field">
+        <label class="label" for="food-input">What did you eat?</label>
+        <textarea id="food-input" rows="3" placeholder="e.g. Greek yogurt + berries + almonds"></textarea>
+      </div>
+
+      <div id="chips" class="chips" role="group" aria-label="Quick add common items"></div>
+
+      <div class="row">
+        <div class="field inline">
+          <label class="label" for="photo-input">Photo (optional)</label>
+          <input id="photo-input" type="file" accept="image/*" hidden />
+          <button id="photo-btn" class="soft" type="button">📷 Add photo</button>
+          <span id="photo-status" class="muted"></span>
+        </div>
+      </div>
+
+      <div id="photo-preview" class="thumb" hidden>
+        <img id="photo-img" alt="Check-in food photo" />
+        <button id="photo-remove" class="icon" aria-label="Remove photo">✕</button>
+      </div>
+
+      <div class="metric">
+        <div class="metric-head">
+          <label for="energy">Energy</label>
+          <span id="energy-value" class="badge">5</span>
+        </div>
+        <input id="energy" type="range" min="1" max="10" step="1" value="5" />
+        <div class="legend"><span>Low</span><span>High</span></div>
+      </div>
+
+      <div class="metric">
+        <div class="metric-head">
+          <label for="hunger">Hunger / Satiety</label>
+          <span id="hunger-value" class="badge">Neutral</span>
+        </div>
+        <input id="hunger" type="range" min="1" max="10" step="1" value="5" />
+        <div class="legend"><span>Starving</span><span>Satisfied</span></div>
+      </div>
+
+      <div class="metric">
+        <div class="metric-head">
+          <label for="fog">Brain fog</label>
+          <span id="fog-value" class="badge">Light</span>
+        </div>
+        <input id="fog" type="range" min="1" max="10" step="1" value="2" />
+        <div class="legend"><span>None</span><span>Severe</span></div>
+      </div>
+
+      <div class="field margin-top">
+        <label class="label" for="notes">Notes (optional)</label>
+        <input id="notes" type="text" placeholder="Anything else worth noting?" />
+      </div>
+
+      <div class="actions">
+        <button id="save" class="primary" type="button">Save check-in</button>
+      </div>
+      <p id="save-status" class="muted save-status" role="status" aria-live="polite"></p>
+    </section>
+
+    <section id="history" class="card" hidden>
+      <h3>Recent</h3>
+      <ul id="history-list" class="history" role="list"></ul>
+    </section>
+
+    <section id="sync" class="card">
+      <h3>Sync</h3>
+      <p class="muted" id="sync-status">—</p>
+      <div class="actions">
+        <button id="export" class="soft" type="button">⬇️ Export JSON</button>
+        <button id="import-sample" class="ghost" type="button" hidden>Load sample</button>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status" hidden></div>
+
+  <dialog id="settings">
+    <form method="dialog">
+      <h2>Settings</h2>
+      <div class="field">
+        <label class="label" for="chk-times">Check-in times</label>
+        <input id="chk-times" type="text" placeholder="11:00, 16:00, 21:00" />
+      </div>
+      <div class="field">
+        <label class="label" for="protein-target">Protein target (g/day)</label>
+        <input id="protein-target" type="number" min="0" step="1" placeholder="90" />
+      </div>
+      <div class="row">
+        <label class="toggle">
+          <input id="notify" type="checkbox" />
+          <span>Reminders (notifications)</span>
+        </label>
+      </div>
+      <div class="actions">
+        <button id="settings-save" class="primary" type="submit">Save</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
