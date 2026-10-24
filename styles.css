@@ -269,8 +269,6 @@ dialog#settings::backdrop { background: rgba(0,0,0,0.6); }
 dialog#settings form { padding: 18px 18px 8px 18px; }
 dialog#settings h2 { margin: 0 0 4px; font-size: 18px; font-weight: 700; }
 dialog#settings .actions { margin-bottom: 8px; }
-.toggle { display: flex; align-items: center; gap: 8px; font-size: 14px; }
-.toggle input { accent-color: var(--accent); }
 
 .save-status { margin-top: 10px; min-height: 1em; }
 .history { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }

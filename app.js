@@ -107,7 +107,6 @@ function wireSlider(id, badgeId, labelFn) {
 }
 
 /* ---------- clock / period ---------- */
-const PERIODS = ['11:00', '16:00', '21:00'];
 function fmtTime(d) { return d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' }); }
 const periodLabelFromHour = (h) => (h < 11 ? 'Morning' : h < 16 ? 'Afternoon' : 'Evening');
 async function updatePeriod() {
@@ -206,36 +205,7 @@ async function saveCheckIn() {
   $('#photo-status').textContent = ''; $('#photo-preview').hidden = true; $('#photo-img').src = '';
   await refreshHistory(); updatePeriod();
   toast('Check-in saved ✓');
-  maybeAskNotify();
   refreshSyncStatus();
-}
-
-/* ---------- notifications (ticket 07: after first check-in) ---------- */
-async function maybeAskNotify() {
-  if (!('Notification' in window)) return;
-  if (Notification.permission === 'default') {
-    const s = loadSettings();
-    if (!s.notify) { try { const r = await Notification.requestPermission(); saveSettings({ ...s, notify: r === 'granted' }); } catch {} }
-    return;
-  }
-  if (Notification.permission === 'granted') {
-    const times = loadSettings().checkinTimes || PERIODS;
-    registerScheduledChecks(times);
-  }
-}
-let _schedTimer = null;
-function registerScheduledChecks(times) {
-  // lightweight in-app reminder using a self-scheduled check every 5 min
-  if (_schedTimer) return;
-  _schedTimer = setInterval(() => {
-    if (!('Notification' in window) || Notification.permission !== 'granted') return;
-    const now = new Date();
-    const hm = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-    const times = loadSettings().checkinTimes || PERIODS;
-    if (times.includes(hm)) {
-      try { new Notification('Nutrition check-in', { body: 'Time to log a quick check-in 🍽' }); } catch {}
-    }
-  }, 5 * 60 * 1000);
 }
 
 /* ---------- history ---------- */
@@ -313,25 +283,15 @@ function wireSettings() {
   const dlg = $('#settings');
   $('#settings-btn').addEventListener('click', () => {
     const s = loadSettings();
-    $('#chk-times').value = (s.checkinTimes || PERIODS).join(', ');
     $('#protein-target').value = s.proteinTarget || '';
-    $('#notify').checked = !!s.notify && 'Notification' in window && Notification.permission === 'granted';
     dlg.showModal();
   });
-  $('#settings-save').addEventListener('click', async (e) => {
+  $('#settings-save').addEventListener('click', (e) => {
     e.preventDefault();
-    const times = $('#chk-times').value.split(',').map((s) => s.trim()).filter(Boolean);
     const target = Number($('#protein-target').value) || null;
-    const s = { ...loadSettings(), checkinTimes: times, proteinTarget: target };
-    if ($('#notify').checked) s.notify = true;
-    saveSettings(s);
-    if (s.notify && 'Notification' in window) {
-      const perm = Notification.permission === 'granted' ? Notification.permission : await Notification.requestPermission();
-      s.notify = perm === 'granted'; saveSettings(s);
-      if (s.notify && times.length) registerScheduledChecks(times);
-    }
+    saveSettings({ ...loadSettings(), proteinTarget: target });
     dlg.close(); toast('Settings saved ✓'); updatePeriod();
-    $('#save-status').textContent = `Saved · protein target ${s.proteinTarget || '—'} g · ${s.checkinTimes.length} check-in times`;
+    $('#save-status').textContent = `Saved · protein target ${target || '—'} g`;
   });
 }
 
