@@ -12,7 +12,7 @@ python3 -m http.server 8000
 # → http://localhost:8000
 ```
 
-Deployed to **https://markvion.github.io/nutrition-tracker/** via GitHub Pages (see ticket 04).
+Deployed to the **`MarkVion/nutrition-tracker`** repo (`main` branch, public). GitHub Pages is **not enabled** — this account's plan doesn't support Pages — so the README URL is the hosting surface, not yet the runtime. The app is fully static and ready to point at any zero-config host (Netlify Drop, Cloudflare Pages, or a local `python3 -m http.server`) the second one of those lands.
 
 ## Features (per tickets)
 
