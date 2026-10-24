@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Nutrition Tracker</title>
-  <meta name="description" content="Low-friction nutrition check-ins — 3x daily, local-first" />
+  <meta name="description" content="Low-friction nutrition + med check-ins — 3x daily, local-first" />
   <meta name="theme-color" content="#18181b" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -79,6 +79,62 @@
         <div class="legend"><span>None</span><span>Severe</span></div>
       </div>
 
+      <!-- MED TRACKING -->
+      <fieldset class="med-section" id="med-section">
+        <legend>💊 Medication</legend>
+
+        <div class="med-row">
+          <label class="label" for="med-taken">Taken today?</label>
+          <label class="toggle">
+            <input id="med-taken" type="checkbox" />
+            <span class="toggle-track"><span class="toggle-thumb"></span></span>
+          </label>
+        </div>
+
+        <div id="med-details" hidden>
+          <div class="field">
+            <label class="label" for="med-name">Medication</label>
+            <input id="med-name" type="text" placeholder="e.g. lisdexamfetamine" />
+          </div>
+
+          <div class="field">
+            <label class="label" for="med-dose">Dose</label>
+            <input id="med-dose" type="text" placeholder="e.g. 10mg" />
+          </div>
+
+          <div class="field">
+            <label class="label" for="med-time">Time taken</label>
+            <input id="med-time" type="time" />
+          </div>
+
+          <div class="metric">
+            <div class="metric-head">
+              <label for="focus">Focus</label>
+              <span id="focus-value" class="badge">5</span>
+            </div>
+            <input id="focus" type="range" min="1" max="10" step="1" value="5" />
+            <div class="legend"><span>Low</span><span>High</span></div>
+          </div>
+
+          <div class="field">
+            <label class="label">Side effects (if any)</label>
+            <div class="side-effects" role="group" aria-label="Side effects checklist">
+              <label class="se-chip"><input type="checkbox" value="appetite-suppressed" /> 🍽 Appetite suppressed</label>
+              <label class="se-chip"><input type="checkbox" value="dry-mouth" /> 💧 Dry mouth</label>
+              <label class="se-chip"><input type="checkbox" value="jaw-clench" /> 🦷 Jaw clenching</label>
+              <label class="se-chip"><input type="checkbox" value="heart-rate" /> ❤️ Heart rate spike</label>
+              <label class="se-chip"><input type="checkbox" value="irritability" /> ⚡ Irritability</label>
+              <label class="se-chip"><input type="checkbox" value="sleep-impact" /> 😴 Sleep impact</label>
+              <label class="se-chip"><input type="checkbox" value="crash" /> 📉 Afternoon crash</label>
+              <label class="se-chip"><input type="checkbox" value="nausea" /> 🤢 Nausea</label>
+              <label class="se-chip"><input type="checkbox" value="headache" /> 🤕 Headache</label>
+              <label class="se-chip"><input type="checkbox" value="none" /> ✅ None</label>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+      <!-- END MED TRACKING -->
+
       <div class="field margin-top">
         <label class="label" for="notes">Notes (optional)</label>
         <input id="notes" type="text" placeholder="Anything else worth noting?" />
@@ -113,6 +169,18 @@
       <div class="field">
         <label class="label" for="protein-target">Protein target (g/day)</label>
         <input id="protein-target" type="number" min="0" step="1" placeholder="90" />
+      </div>
+      <div class="field">
+        <label class="label" for="current-med">Current medication</label>
+        <input id="current-med" type="text" placeholder="e.g. teva-lisdexamfetamine" />
+      </div>
+      <div class="field">
+        <label class="label" for="current-dose">Current dose</label>
+        <input id="current-dose" type="text" placeholder="e.g. 10mg" />
+      </div>
+      <div class="field">
+        <label class="label" for="med-start-date">Medication start date</label>
+        <input id="med-start-date" type="date" />
       </div>
       <div class="actions">
         <button id="settings-save" class="primary" type="submit">Save</button>

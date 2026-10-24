@@ -100,6 +100,9 @@ function fogLabel(v) {
   if (v <= 2) return 'None'; if (v <= 4) return 'Light';
   if (v <= 7) return 'Moderate'; return 'Severe';
 }
+function focusLabel(v) {
+  if (v <= 3) return 'Low'; if (v <= 6) return 'Moderate'; return 'High';
+}
 function wireSlider(id, badgeId, labelFn) {
   const el = $(id), b = $(badgeId);
   const update = () => (b.textContent = labelFn(Number(el.value)));
@@ -158,15 +161,48 @@ function compressImage(file, maxDim = 720) {
   });
 }
 
+/* ---------- med tracking helpers ---------- */
+function collectSideEffects() {
+  const boxes = document.querySelectorAll('.side-effects input[type="checkbox"]:checked');
+  return Array.from(boxes).map(b => b.value);
+}
+function wireMedToggle() {
+  const toggle = $('#med-taken');
+  const details = $('#med-details');
+  const update = () => { details.hidden = !toggle.checked; };
+  toggle.addEventListener('change', update);
+  update();
+}
+function setMedDefaults() {
+  // Autofill med name/dose from settings (they rarely change within a day).
+  // medStartTime is the *start date* of the medication (settings/export), not
+  // the daily time-taken, so it intentionally does NOT autofill here.
+  const s = loadSettings();
+  if (s.currentMed) $('#med-name').value = s.currentMed;
+  if (s.currentDose) $('#med-dose').value = s.currentDose;
+}
+
 /* ---------- save check-in ---------- */
 async function saveCheckIn() {
   const food = $('#food-input').value.trim();
   const energy = Number($('#energy').value);
   const hunger = Number($('#hunger').value);
   const fog = Number($('#fog').value);
+  const focus = Number($('#focus').value);
   const notes = $('#notes').value.trim();
   const date = todayISO();
   const stamp = new Date();
+
+  // med data
+  const medTaken = $('#med-taken').checked;
+  const medData = medTaken ? {
+    taken: true,
+    name: $('#med-name').value.trim() || null,
+    dose: ($('#med-dose').value.trim() + '').replace(/\s*mg\s*/i, 'mg').trim() || null,
+    time: $('#med-time').value || null,
+    focus,
+    sideEffects: collectSideEffects(),
+  } : { taken: false };
 
   let photo = null;
   if (photoPreviewUrl) photo = await compressImage(photoPreviewUrl.blob);
@@ -179,9 +215,10 @@ async function saveCheckIn() {
     type: periodLabelFromHour(stamp.getHours()).toLowerCase(),
     foods: food ? food.split(',').map((s) => s.trim()).filter(Boolean) : [],
     notes,
-    energy, hunger, fog,
+    energy, hunger, fog, focus,
     photoRef: photo,
     photoName: photo ? (photoPreviewUrl && photoPreviewUrl.name) || 'photo.jpg' : null,
+    medData,
   };
   if (existing) {
     meals = Array.isArray(existing.meals) ? [...existing.meals, meal] : [meal];
@@ -197,12 +234,18 @@ async function saveCheckIn() {
   await dbPut(entry);
 
   const s = loadSettings();
-  $('#save-status').textContent = `Saved ${fmtTime(stamp)} · protein target ${s.proteinTarget || '—'} g`;
+  const medInfo = medData.taken ? ` · 💊 ${medData.name || 'med'} ${medData.dose || ''}` : '';
+  $('#save-status').textContent = `Saved ${fmtTime(stamp)} · protein target ${s.proteinTarget || '—'} g${medInfo}`;
   // reset transient form
   $('#food-input').value = ''; $('#notes').value = '';
   document.querySelectorAll('#chips .chip').forEach((c) => c.setAttribute('aria-pressed', 'false'));
   $('#photo-input').value = ''; photoPreviewUrl = null;
   $('#photo-status').textContent = ''; $('#photo-preview').hidden = true; $('#photo-img').src = '';
+  // reset med checkboxes
+  document.querySelectorAll('.side-effects input[type="checkbox"]').forEach((c) => c.checked = false);
+  // keep med name/dose/time for convenience (they rarely change within a day); reset taken
+  $('#med-taken').checked = false;
+  $('#med-details').hidden = true;
   await refreshHistory(); updatePeriod();
   toast('Check-in saved ✓');
   refreshSyncStatus();
@@ -226,8 +269,11 @@ async function refreshHistory() {
     const li = document.createElement('li');
     const last = e.meals[e.meals.length - 1];
     const foodStr = last && last.foods && last.foods.length ? last.foods.join(', ') : '—';
+    const medStr = last && last.medData && last.medData.taken
+      ? ` · 💊 ${last.medData.name || 'med'} ${last.medData.dose || ''}`
+      : '';
     li.innerHTML =
-      `<div>${e.date} · E${last.energy} · H${last.hunger} · F${last.fog}</div>` +
+      `<div>${e.date} · E${last.energy} · F${last.focus ?? '—'}${medStr}</div>` +
       `<div class="meta">${foodStr}</div>`;
     ul.appendChild(li);
   });
@@ -242,10 +288,13 @@ async function exportJSON() {
   const s = loadSettings();
   const payload = {
     meta: {
-      formatVersion: '1.0',
+      formatVersion: '2.0',
       exportTimestamp: new Date().toISOString(),
       deviceInfo: { app: 'nutrition-tracker', screen: window.screen.width + 'x' + window.screen.height },
       proteinTarget: s.proteinTarget || null,
+      currentMed: s.currentMed || null,
+      currentDose: s.currentDose || null,
+      medStartDate: s.medStartDate || null,
     },
     days,
   };
@@ -284,14 +333,24 @@ function wireSettings() {
   $('#settings-btn').addEventListener('click', () => {
     const s = loadSettings();
     $('#protein-target').value = s.proteinTarget || '';
+    $('#current-med').value = s.currentMed || '';
+    $('#current-dose').value = s.currentDose || '';
+    $('#med-start-date').value = s.medStartDate || '';
     dlg.showModal();
   });
   $('#settings-save').addEventListener('click', (e) => {
     e.preventDefault();
-    const target = Number($('#protein-target').value) || null;
-    saveSettings({ ...loadSettings(), proteinTarget: target });
+    const s = loadSettings();
+    saveSettings({
+      ...s,
+      proteinTarget: Number($('#protein-target').value) || null,
+      currentMed: $('#current-med').value.trim() || null,
+      currentDose: ($('#current-dose').value.trim() + '').replace(/\s*mg\s*/i, 'mg').trim() || null,
+      medStartDate: ($('#med-start-date').value || '').length ? $('#med-start-date').value : null,
+    });
+    // persist defaults so they autofill on next check-in
+    setMedDefaults();
     dlg.close(); toast('Settings saved ✓'); updatePeriod();
-    $('#save-status').textContent = `Saved · protein target ${target || '—'} g`;
   });
 }
 
@@ -318,7 +377,10 @@ function registerSW() {
   wireSlider('#energy', '#energy-value', energyLabel);
   wireSlider('#hunger', '#hunger-value', hungerLabel);
   wireSlider('#fog', '#fog-value', fogLabel);
+  wireSlider('#focus', '#focus-value', focusLabel);
   wirePhoto();
+  wireMedToggle();
+  setMedDefaults();
   wireSettings();
   $('#save').addEventListener('click', saveCheckIn);
   $('#export').addEventListener('click', exportJSON);

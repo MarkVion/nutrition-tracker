@@ -271,6 +271,87 @@ dialog#settings h2 { margin: 0 0 4px; font-size: 18px; font-weight: 700; }
 dialog#settings .actions { margin-bottom: 8px; }
 
 .save-status { margin-top: 10px; min-height: 1em; }
+
+/* ---------- med tracking ---------- */
+.med-section {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  margin: 0 0 16px;
+}
+.med-section legend {
+  font-weight: 600;
+  padding: 0 8px;
+  color: var(--accent);
+}
+.med-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.side-effects {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.se-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s;
+}
+.se-chip:has(input:checked) {
+  background: color-mix(in srgb, var(--accent) 20%, transparent);
+  border-color: var(--accent);
+}
+.se-chip input {
+  accent-color: var(--accent);
+}
+
+/* ---------- toggle switch ---------- */
+.toggle {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 26px;
+}
+.toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.toggle-track {
+  position: absolute;
+  inset: 0;
+  background: var(--text-muted);
+  border-radius: 999px;
+  transition: background 0.2s;
+}
+.toggle-thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  background: var(--text);
+  border-radius: 50%;
+  transition: transform 0.2s;
+}
+.toggle input:checked ~ .toggle-track {
+  background: var(--accent);
+}
+.toggle input:checked ~ .toggle-track .toggle-thumb {
+  transform: translateX(22px);
+}
+
 .history { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
 .history li {
   background: #1c1c1f;
