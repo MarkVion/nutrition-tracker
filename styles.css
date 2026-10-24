@@ -29,7 +29,8 @@ html, body {
 }
 
 body {
-  padding: 16px 16px calc(24px + env(safe-area-inset-bottom));
+  padding: calc(16px + env(safe-area-inset-top, 0px)) 16px
+    calc(24px + env(safe-area-inset-bottom, 0px));
   max-width: 480px;
   margin: 0 auto;
 }
