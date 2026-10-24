@@ -14,6 +14,7 @@
 }
 
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 
 html, body {
   margin: 0;
@@ -95,7 +96,7 @@ textarea, input[type="text"], input[type="number"] {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 10px;
-  font-size: 14px;
+  font-size: 16px; /* >=16px: iOS Safari auto-zooms on focus any input under 16px */
   font-family: inherit;
   line-height: 1.4;
 }
@@ -139,8 +140,17 @@ textarea:focus, input:focus {
   border-radius: var(--radius);
   overflow: hidden;
   border: 1px solid var(--border);
+  background: #1c1c1f; /* solid backdrop so the box reads as intentional, not "broken" */
 }
-.thumb img { max-width: 200px; max-height: 150px; display: block; }
+.thumb img {
+  max-width: 200px;
+  max-height: 150px;
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+  background: #1c1c1f;
+}
 .thumb .icon {
   position: absolute;
   top: 6px; right: 6px;
@@ -148,8 +158,10 @@ textarea:focus, input:focus {
   border-radius: 50%;
   background: rgba(0,0,0,0.6);
   color: #fff;
-  border: none;
+  border: 1px solid rgba(255,255,255,0.2);
   cursor: pointer;
+  display: grid; place-content: center;
+  line-height: 1; font-size: 15px; padding: 0;
 }
 
 .metric { margin-top: 16px; }
