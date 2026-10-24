@@ -38,6 +38,28 @@
 
       <div id="chips" class="chips" role="group" aria-label="Quick add common items"></div>
 
+      <div class="field" id="barcode-block">
+        <label class="label" for="barcode-input">Barcode <span class="muted">— scan or type → name + nutrition</span></label>
+        <div class="row" style="gap:8px; margin-top:4px;">
+          <button id="btn-scan" class="soft" type="button" style="flex:0 0 auto">📷 Scan</button>
+          <button id="btn-stop-scan" class="soft" type="button" style="flex:0 0 auto" hidden>⏹ Stop</button>
+        </div>
+        <div class="row" style="margin-top:8px; gap:8px;">
+          <input id="barcode-input" type="text" inputmode="text" style="flex:1"
+                 placeholder="e.g. 3017620422003 (Nutella 400 g)" />
+          <button id="btn-lookup" class="soft" type="button" style="flex:0 0 auto">Look up</button>
+        </div>
+        <p id="barcode-status" class="muted save-status" role="status" aria-live="polite"></p>
+        <div id="scan-view" hidden class="scan-view" role="dialog" aria-label="Barcode scanner">
+          <video id="scan-video" playsinline></video>
+          <div id="scan-hint" class="scan-hint" hidden>
+            <div class="scan-frame" aria-hidden="true"></div>
+            <p class="muted">Point the camera at a barcode.<br />It will lock on automatically.</p>
+          </div>
+        </div>
+        <div id="barcode-result" hidden aria-live="polite"></div>
+      </div>
+
       <div class="row">
         <div class="field inline">
           <label class="label" for="photo-input">Photo (optional)</label>

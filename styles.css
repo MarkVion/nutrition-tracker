@@ -366,6 +366,65 @@ dialog#settings .actions { margin-bottom: 8px; }
   .brand-mark { width: 36px; height: 36px; }
   .brand-text h1 { font-size: 18px; }
 }
+/* ---------- Barcode scan view ---------- */
+.scan-view {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  position: relative;
+  background: #000;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.scan-view video {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  display: block;
+}
+.scan-hint {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 14px;
+  padding: 12px;
+  backdrop-filter: blur(1px);
+}
+.scan-frame {
+  width: min(240px, 60%);
+  height: 80px;
+  border: 2px dashed rgba(255, 255, 255, 0.8);
+  border-radius: 10px;
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  animation: pulse-frame 1.4s ease-in-out infinite;
+}
+@keyframes pulse-frame { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+
+/* ---------- Barcode result card ---------- */
+#barcode-result { margin-top: 10px; }
+.bc-card {
+  background: #1c1c1f;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 12px 10px;
+  margin-top: 6px;
+}
+.bc-name { font-weight: 500; margin-bottom: 10px; font-size: 13px; }
+.bc-live {
+  font-size: 10px; color: var(--accent);
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.bc-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.bc-stat { display: block; font-size: 14px; font-weight: 600; white-space: nowrap; }
+.bc-stat b { font-weight: 700; }
+.bc-stat-l { display: block; font-size: 11px; color: var(--text-muted); }
+.bc-actions { display: flex; align-items: center; gap: 10px; }
+
 @media (prefers-color-scheme: light) {
   :root {
     --bg: #fafafa;
